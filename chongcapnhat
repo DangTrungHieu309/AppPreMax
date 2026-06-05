@@ -20,8 +20,8 @@ http-request ^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:4
 (^https?:\/\/[\w-]+\.googlevideo\.com\/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
 
 [Script]
-# 1. Locket Gold (Bypass trực tiếp hệ thống xử lý giao dịch RevenueCat toàn cầu)
-Locket_Gold = type=http-response,pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,timeout=60,script-path=https://raw.githubusercontent.com/ddgksf2013/Filter/master/Script/revenuecat.js
+# 1. Locket Gold (Sửa lại code chuyên biệt cho Locket - Tự động cập nhật chống fix)
+Locket_Gold = type=http-response,pattern=^https:\/\/api\.locket\.camera\/v[0-9]\/users\/,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/CenBoMin/QuantumultX-Files/main/Locket/LocketGold.js
 
 # 2. YouTube Premium (Bộ lọc loại bỏ quảng cáo và hỗ trợ chạy nền cập nhật theo thời gian thực)
 YouTube_Premium = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/v1\/(player|next|browse|search|reel\/reel_watch_sequence|guide|account\/get_setting),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.js
@@ -36,4 +36,4 @@ SoundCloud_Go = type=http-response,pattern=^https:\/\/api-v2\.soundcloud\.com\/m
 ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&oad data-type=text data="" status-code=200
 
 [MITM]
-hostname = %APPEND%, *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, s.youtube.com, -redirector*.googlevideo.com, api.revenuecat.com, api-v2.soundcloud.com, spclient.wg.spotify.com, *spclient.spotify.com
+hostname = %APPEND%, api.locket.camera, *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, s.youtube.com, -redirector*.googlevideo.com, api-v2.soundcloud.com, spclient.wg.spotify.com, *spclient.spotify.com
