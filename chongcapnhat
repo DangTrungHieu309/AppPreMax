@@ -1,1 +1,39 @@
+#!name = DangHieu AppPre full
+#!desc = Chống lỗi khi App cập nhật - Tự động cập nhật Script mới nhất cho YouTube, Locket, Spotify, SoundCloud.
+#!author = DangHieu
+#Shadowrocket Unlock Premium 2026
 
+[Rule]
+AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT
+
+[Header Rewrite]
+^https?://api.revenuecat.com/.+/(receipts$|subscribers/?(.*?)*$) header-del x-revenuecat-etag
+^https?://api.revenuecat.com/.+/(receipts$|subscribers/?(.*?)*$) header-del X-RevenueCat-ETag
+http-request ^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/user-customization-service\/v1\/customize$ header-del if-none-match
+
+[Url Rewrite]
+^https?:\/\/[\w-]+\.googlevideo\.com\/(?!(dclk_video_ads|videoplayback\?)).+&oad _ reject-200
+^https?:\/\/(www|s)\.youtube\.com\/api\/stats\/ads _ reject-200
+^https?:\/\/(www|s)\.youtube\.com\/(pagead|ptracking) _ reject-200
+^https?:\/\/s\.youtube\.com\/api\/stats\/qoe\?adcontext _ reject-200
+(^https?:\/\/[\w-]+\.googlevideo\.com\/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
+
+[Script]
+# 1. Locket Gold (Sử dụng API chung của RevenueCat - Bất tử kể cả Locket ra bản mới)
+Locket_Gold = type=http-response,pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,timeout=60,script-path=https://raw.githubusercontent.com/ddgksf2013/Filter/master/Script/revenuecat.js
+
+# 2. YouTube Premium (Sử dụng nguồn Chống Quảng Cáo & Phát Nền cập nhật liên tục của Maasea)
+YouTube_Premium = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/v1\/(player|next|browse|search|reel\/reel_watch_sequence|guide|account\/get_setting),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.js
+
+# 3. Spotify Premium (Sử dụng nguồn bẻ khóa tính năng & hiện lời bài hát tự động cập nhật của app2smile)
+Spotify_Premium = type=http-response,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$,requires-body=1,binary-body-mode=1,max-size=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/script/spotify.js
+
+# 4. SoundCloud Go+ (Sử dụng mã nguồn nén tự động chống lỗi hệ thống)
+SoundCloud_Go = type=http-response,pattern=^https:\/\/api-v2\.soundcloud\.com\/me,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/Tartarus2014/Script/master/SoundCloud.js
+
+[Map Local]
+^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&oad data-type=text data="" status-code=200
+
+[MITM]
+hostname = %APPEND%, *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, s.youtube.com, -redirector*.googlevideo.com, api.revenuecat.com, api-v2.soundcloud.com, spclient.wg.spotify.com, *spclient.spotify.com
